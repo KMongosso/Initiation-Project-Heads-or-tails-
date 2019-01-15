@@ -1,0 +1,83 @@
+#!/usr/bin/env python
+#-*- coding: utf-8 -*-
+
+from benchmarks import newbch as bch
+import os
+from predictors import class_Predictor as prd 
+import matplotlib.pyplot as plt
+import time
+
+def get_bch(bch_L,bchName,bch_available):
+    if (bchName in bch_available):
+        print("\nYou have chosen a benchmark in the list above ! \n")
+        bch.load_bch(bch_L,bchName)
+    else:
+        print("\nYou have chosen to make your own benchmark\n")
+        decision = raw_input("Do you want to enter your benchmark by hand ? [Y/n] : ")
+        if "Y" in decision:
+            bch.handMadeBenchmark(bch_L,bchName)
+            return
+            
+        size = int(raw_input("\nQuelle doit etre au plus la taille de votre benchmark ? : "))
+        decision = raw_input("Do you want to make it all randomly ? [Y/n] : ")
+        if "Y" in decision:
+            bch.randomBenchmark(bch_L,bchName,size)
+            return
+                
+        bch.benchmarks(bch_L,bchName,size)
+
+
+
+scat = []
+
+for memory in range(5,1301):
+    scat.append(0)
+
+for i in range(1,4):
+    print(i)
+    bch_L = []
+    bchName = "1.txt"
+    os.chdir("./benchmarks")
+    bch.load_bch(bch_L,bchName)
+    os.chdir("../")
+
+    for memory in range(5,1301):
+    #bch_L = []
+        percent = []
+        success = 0
+        predictor = prd.Predictor(memory)
+        res_L = []
+
+        for turn in range(0,len(bch_L)):
+            res_L.append(predictor.n_bits_pattern_Memory(bch_L[:turn],2))
+        # res_L.append(predictor.predict(bch_L[:turn]))
+            if res_L[turn] == bch_L[turn]:
+                success+= 1
+                percent.append(float(success)*100/(turn+1))
+            else:
+                percent.append(float(success)*100/(turn+1))
+
+        scat[memory-5] += percent[-1]
+
+
+for memory in range(5,1301):
+    scat[memory-5] = float(scat[memory-5])/3.0
+
+print(scat.index(max(scat))+5)
+
+plt.scatter(range(5,1301),scat)
+titre = "Pourcentage de succes en fonction du memory"
+plt.title(titre)
+plt.xlabel("Memory")
+plt.ylabel("Pourcentage de reussite") 
+#plt.axis([-5,len(bar)+3,min(bar)-3,max(bar)+5])
+
+plt.plot(scat.index(max(scat)), max(scat), "ro", linewidth=3)
+plt.text(scat.index(max(scat))+1, max(scat), "Max")
+plt.autoscale()
+
+plt.savefig("best_memory_22.png")
+plt.show()
+plt.close()
+
+

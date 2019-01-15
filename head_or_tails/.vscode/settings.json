@@ -1,0 +1,6 @@
+{
+    "python.unitTest.pyTestArgs": [
+        "benchmarks"
+    ],
+    "python.unitTest.pyTestEnabled": true
+}

@@ -1,0 +1,5 @@
+demonstrator.o: src/demonstrator.cpp headers/demonstrator.h
+display.o: src/display.cpp headers/display.h
+predictors.o: src/predictors.cpp headers/predictors.h
+main.o: src/main.cpp headers/demonstrator.h headers/display.h \
+ headers/predictors.h
